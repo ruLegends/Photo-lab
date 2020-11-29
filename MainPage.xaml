@@ -18,6 +18,54 @@
         <x:Int32 x:Key="SmallItemMarginValue">0</x:Int32>
         <Thickness x:Key="SmallItemMargin">0</Thickness>
         <x:Int32 x:Key="DefaultWindowSidePaddingValue">16</x:Int32>
+
+        <Flyout x:Key="zoomFlyout">
+            <StackPanel>
+                <Slider x:Name="ZoomSlider"
+                        Minimum="180"
+                        Maximum="540"
+                        Value="270"
+                        Margin="0,5,0,0"
+                        TickFrequency="90"
+                        SnapsTo="Ticks"
+                        ValueChanged="{x:Bind DetermineItemSize}"
+                        IsEnabled="{x:Bind FitScreenToggle.IsOn, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        Header=" Размер элемента сетки " />
+                <!--ValueChanged="{x:Bind DetermineItemSize}"-->
+                <ToggleSwitch x:Name="FitScreenToggle"
+                              Header="По размеру экрана"
+                              Toggled="{x:Bind DetermineItemSize}"
+                              ToolTipService.ToolTip="Измените размер изображений, чтобы использовать доступное пространство." />
+            </StackPanel>
+            <!--Toggled="{x:Bind DetermineItemSize}"-->
+        </Flyout>
+
+        <ItemsPanelTemplate x:Key="ImageGridView_ItemsPanelTemplate">
+            <ItemsWrapGrid Orientation="Horizontal"
+                           HorizontalAlignment="Center"/>
+        </ItemsPanelTemplate>
+
+        <DataTemplate x:Key="ImageGridView_DefaultItemTemplate" x:DataType="local:ImageFileInfo">
+            <Grid 
+                Height="{Binding ItemSize, ElementName=page}" 
+                Width="{Binding ItemSize, ElementName=page}" 
+                Margin="{StaticResource LargeItemMargin}">
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Image x:Name="ItemImage" Source="Assets/StoreLogo.png" Stretch="Uniform" />
+                <StackPanel Orientation="Vertical" Grid.Row="1">
+                    <TextBlock Text="ImageTitle" HorizontalAlignment="Center" Style="{StaticResource SubtitleTextBlockStyle}" />
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <TextBlock Text="ImageFileType" HorizontalAlignment="Center" Style="{StaticResource CaptionTextBlockStyle}" />
+                        <TextBlock Text="ImageDimensions" HorizontalAlignment="Center" Style="{StaticResource CaptionTextBlockStyle}" Margin="8,0,0,0" />
+                    </StackPanel>
+                    <muxc:RatingControl IsReadOnly="True"/>
+                </StackPanel>
+            </Grid>
+        </DataTemplate>
+        
         
         <DataTemplate x:Key="ImageGridView_SmallItemTemplate" x:DataType="local:ImageFileInfo">
             <Grid
@@ -48,45 +96,7 @@
                 </Image>
             </Grid>
         </DataTemplate>
-
-        <Flyout x:Key="zoomFlyout">
-            <StackPanel>
-                <Slider x:Name="ZoomSlider"
-                        Minimum="180"
-                        Maximum="540"
-                        Value="270"
-                        Margin="0,5,0,0"
-                        TickFrequency="90"
-                        SnapsTo="Ticks"
-                        ValueChanged="{x:Bind DetermineItemSize}"
-                        IsEnabled="{x:Bind FitScreenToggle.IsOn, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                        Header=" Размер элемента сетки " />
-                <!--ValueChanged="{x:Bind DetermineItemSize}"-->
-                <ToggleSwitch x:Name="FitScreenToggle"
-                              Header="По размеру экрана"
-                              Toggled="{x:Bind DetermineItemSize}"
-                              ToolTipService.ToolTip="Измените размер изображений, чтобы использовать доступное пространство." />
-            </StackPanel>
-            <!--Toggled="{x:Bind DetermineItemSize}"-->
-        </Flyout>
-
-        <DataTemplate x:Key="ImageGridView_DefaultItemTemplate">
-            <Grid Height="{Binding ItemSize, ElementName=page}" Width="{Binding ItemSize, ElementName=page}" Margin="8">
-                <Grid.RowDefinitions>
-                    <RowDefinition />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
-                <Image x:Name="ItemImage" Source="Assets/StoreLogo.png" Stretch="Uniform" />
-                <StackPanel Orientation="Vertical" Grid.Row="1">
-                    <TextBlock Text="ImageTitle" HorizontalAlignment="Center" Style="{StaticResource SubtitleTextBlockStyle}" />
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                        <TextBlock Text="ImageFileType" HorizontalAlignment="Center" Style="{StaticResource CaptionTextBlockStyle}" />
-                        <TextBlock Text="ImageDimensions" HorizontalAlignment="Center" Style="{StaticResource CaptionTextBlockStyle}" Margin="8,0,0,0" />
-                    </StackPanel>
-                    <muxc:RatingControl IsReadOnly="True"/>
-                </StackPanel>
-            </Grid>
-        </DataTemplate>
+        
         <Style x:Key="ImageGridView_DefaultItemContainerStyle" TargetType="GridViewItem">
             <Setter Property="FontFamily" Value="{ThemeResource ContentControlThemeFontFamily}"/>
             <Setter Property="FontSize" Value="{ThemeResource ControlContentThemeFontSize}"/>
@@ -167,6 +177,7 @@
                                         </VisualState.StateTriggers>
                                         <VisualState.Setters>
                                             <Setter Target="ImageGridView.ItemTemplate" Value="{StaticResource ImageGridView_SmallItemTemplate}"/>
+                                            <Setter Target="ImageGridView.ItemContainerStyle" Value="{StaticResource ImageGridView_SmallItemContainerStyle}" />
                                             <Setter Target="ZoomSlider.Minimum" Value="80" />
                                             <Setter Target="ZoomSlider.Maximum" Value="180" />
                                             <Setter Target="ZoomSlider.TickFrequency" Value="20" />
@@ -180,10 +191,7 @@
                 </Setter.Value>
             </Setter>
         </Style>
-        <ItemsPanelTemplate x:Key="ImageGridView_ItemsPanelTemplate">
-            <ItemsWrapGrid Orientation="Horizontal"
-                           HorizontalAlignment="Center"/>
-        </ItemsPanelTemplate>
+        
     </Page.Resources>
     
     <RelativePanel>
@@ -192,6 +200,7 @@
          Text="Коллекция"
          VerticalAlignment="Top"
          Style="{ThemeResource TitleTextBlockStyle}"/>
+        
         <CommandBar x:Name="MainCommandBar"
                     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
                     RelativePanel.AlignRightWithPanel="True"
@@ -203,8 +212,12 @@
             
         </CommandBar>
         
-        <GridView ItemsPanel="{StaticResource ImageGridView_ItemsPanelTemplate}" ItemContainerStyle="{StaticResource ImageGridView_DefaultItemContainerStyle}" x:Name="ImageGridView"
+        <GridView 
+            ItemsPanel="{StaticResource ImageGridView_ItemsPanelTemplate}" 
+            ItemContainerStyle="{StaticResource ImageGridView_DefaultItemContainerStyle}" 
+            x:Name="ImageGridView"
          Margin="0,0,0,8"
+         ItemsSource="{x:Bind Images, Mode=OneWay}"
          RelativePanel.AlignLeftWithPanel="True"
          RelativePanel.AlignRightWithPanel="True"
          RelativePanel.Below="TitleTextBlock"

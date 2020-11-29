@@ -1,6 +1,7 @@
 ﻿using Album.ViewModel;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -31,6 +32,7 @@ namespace Album
     {
         public event PropertyChangedEventHandler PropertyChanged;
         public static MainPage Current;
+        public ObservableCollection<ImageFileInfo> Images { get; } = new ObservableCollection<ImageFileInfo>();
 
         public double ItemSize
         {
@@ -54,9 +56,6 @@ namespace Album
         }
         private async Task GetItemsAsync()
         {
-            //StorageFile Images = new StorageFile();
-            List<ImageFileInfo> Images = new List<ImageFileInfo>();
-
             QueryOptions options = new QueryOptions();
             options.FolderDepth = FolderDepth.Deep;
             options.FileTypeFilter.Add(".jpg");
@@ -142,11 +141,10 @@ namespace Album
         }
         private void DetermineItemSize()
         {
-            if (
-            FitScreenToggle != null
-            && FitScreenToggle.IsOn == true
-            && ImageGridView != null
-            && ZoomSlider != null)
+            if (FitScreenToggle != null
+                && FitScreenToggle.IsOn == true
+                && ImageGridView != null
+                && ZoomSlider != null)
             {
                 int margins = (int)this.Resources["LargeItemMarginValue"] * 4;
                 double gridWidth = ImageGridView.ActualWidth - (int)this.Resources["DefaultWindowSidePaddingValue"];
